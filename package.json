@@ -16,5 +16,10 @@
   "bugs": {
     "url": "https://github.com/domengabrovsek/dashdash/issues"
   },
-  "homepage": "https://github.com/domengabrovsek/dashdash#readme"
+  "homepage": "https://github.com/domengabrovsek/dashdash#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4"
+  }
 }
