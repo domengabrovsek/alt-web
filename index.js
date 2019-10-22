@@ -1,7 +1,5 @@
 'use strict';
 
-const rp = require('request-promise');
-
 const express = require('express');
 
 const app = express();
