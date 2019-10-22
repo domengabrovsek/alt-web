@@ -8,14 +8,19 @@ const { parse } = require('../parser');
 
 router.get('/websites/:search', async(req, res) => {
 
+    console.log('Request received for:', req.params.search);
+
     try {
         const searchQuery = req.params.search.includes('.com') 
             ? req.params.search
             : `${req.params.search}.com`;
 
-        const uri = `https://www.similarsitesearch.com/alternatives-to/${searchQuery}`;
+        const uri = `https://www.similarsitesearch.com/search/`;
         const options = {
             uri: uri,
+            qs: {
+                URL:searchQuery
+            },
             transform: function (body) {
                 return cheerio.load(body);
             }
@@ -39,11 +44,11 @@ router.get('/websites/:search', async(req, res) => {
                 const similarity = $(element).find('.res_similarity')
                     .eq(1)
                     .html()
-                    .match(/[0-9]{2}%/)[0];
+                    .match(/[0-9]{0,2}%/)[0];
                 const popularity = $(element).find('.res_similarity')
                     .eq(1)
                     .html()
-                    .match(/is very high|is high|is low/)[0];
+                    .match(/is very high|is high|is medium|is low|is very low/)[0]
                 const languageLocation = $(element).find('.res_similarity')
                     .eq(1)
                     .html()
@@ -64,7 +69,7 @@ router.get('/websites/:search', async(req, res) => {
                     .split(',')
                     .map(x => x.trim());
                 const rating = ratingVotes[0];
-                const votes = ratingVotes[1].match(/[0-9]{1,10}/g)[0];
+                const votes = ratingVotes && ratingVotes[1] && ratingVotes[1].match(/[0-9]{1,10}/g)[0];
             
 
                 objects.push({
@@ -84,9 +89,13 @@ router.get('/websites/:search', async(req, res) => {
                 });
             });
 
-            console.log(objects);
             res.send(objects);
-        });
+            console.log(`Request for: ${req.params.search} was successful.`);
+        }).catch(error => {
+            console.log('Something went wrong. Please try again.');
+            console.log(error);
+            res.status(400).send('Something went wrong. Please try again.');
+        }); 
         
     } catch (error) {
         console.log(error)
