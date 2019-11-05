@@ -4,6 +4,8 @@ const parse = ($, searchQuery) => {
 
     const objects = [];
 
+    // TODO try to find a better way to parse this
+    // https://stackoverflow.com/questions/1732348/regex-match-open-tags-except-xhtml-self-contained-tags?page=1&tab=votes#tab-top
     $('.res_item').each((i, element) => {
         const title = $(element).find('.restitle').text();
         const description = $(element).find('.res_desc').text();
@@ -44,7 +46,7 @@ const parse = ($, searchQuery) => {
         const rating = ratingVotes[0];
         const votes = ratingVotes && ratingVotes[1] && ratingVotes[1].match(/[0-9]{1,10}/g)[0];
     
-        objects.push({
+        const object = {
             id: i,
             search: searchQuery,
             title: title,
@@ -58,7 +60,9 @@ const parse = ($, searchQuery) => {
             matchingTags: matchingTags,
             rating: rating,
             votes: votes
-        });
+        };
+
+        objects.push(object);
     });
 
     return objects;

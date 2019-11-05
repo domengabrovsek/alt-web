@@ -1,24 +1,23 @@
 {
-  "name": "dashdash",
+  "name": "similar-websites",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "setup-db": "docker run -p 27017:27017 -d --restart unless-stopped --name similar-websites-mongodb mongo",
     "start-db": "docker start similar-websites-mongodb"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/domengabrovsek/dashdash.git"
+    "url": "git+https://github.com/domengabrovsek/similar-websites.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/domengabrovsek/dashdash/issues"
+    "url": "https://github.com/domengabrovsek/similar-websites/issues"
   },
-  "homepage": "https://github.com/domengabrovsek/dashdash#readme",
+  "homepage": "https://github.com/domengabrovsek/similar-websites#readme",
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
     "express": "^4.17.1",
