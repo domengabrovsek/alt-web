@@ -15,10 +15,10 @@
 ~ npm install 
 
 // setup database
-npm run setup-db 
+~ npm run setup-db 
 
 // run app
-node index.js
+~ node index.js
 ```
 
 ## Endpoints
