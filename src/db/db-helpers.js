@@ -4,7 +4,6 @@ const Result = require('../models/result');
 
 const readFromDb = async({ key, value } = {}) => {
     try {
-        console.log('Before find');
         let filter = {};
 
         if(key, value) {

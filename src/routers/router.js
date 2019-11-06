@@ -6,14 +6,18 @@ const rp = require('request-promise');
 const cheerio = require('cheerio');
 const { parse } = require('../parser');
 const { saveToDb, deleteFromDb, readFromDb } = require('../db/db-helpers');
+const { saveToCsv } = require('../fs/csv-helpers');
 
 router.get('/websites/save-to-csv', async(req, res) => {
 
     try {
         // get all records from db
-        const records = await readFromDb();
+        const data = await readFromDb();
+        const columns = Object.keys(JSON.parse(JSON.stringify(data))[0]);
 
-        res.send({ message: 'Success', data: records, noOfRecords: records.length });
+        await saveToCsv({ columns, data });
+
+        res.send({ message: 'Success', noOfRecords: data.length });
 
     } catch (error) {
         console.log(error);
@@ -25,7 +29,6 @@ router.get('/websites/save-to-csv', async(req, res) => {
 router.delete('/websites', async(req, res) => {
 
     await deleteFromDb();
-
     res.send();
 });
 
