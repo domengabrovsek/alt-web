@@ -5,7 +5,21 @@ const router = new express.Router();
 const rp = require('request-promise');
 const cheerio = require('cheerio');
 const { parse } = require('../parser');
-const { saveToDb, deleteFromDb } = require('../db/db-helpers');
+const { saveToDb, deleteFromDb, readFromDb } = require('../db/db-helpers');
+
+router.get('/websites/save-to-csv', async(req, res) => {
+
+    try {
+        // get all records from db
+        const records = await readFromDb();
+
+        res.send({ message: 'Success', data: records, noOfRecords: records.length });
+
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ error: 'Something went wrong, try again.'});
+    }
+});
 
 // delete all records from db
 router.delete('/websites', async(req, res) => {
@@ -15,6 +29,7 @@ router.delete('/websites', async(req, res) => {
     res.send();
 });
 
+// get websites
 router.get('/websites/:search', async(req, res) => {
 
     console.log(`Request received for: ${req.params.search}`);
