@@ -5,7 +5,15 @@ const router = new express.Router();
 const rp = require('request-promise');
 const cheerio = require('cheerio');
 const { parse } = require('../parser');
-const { saveToDb } = require('../db/db-helpers');
+const { saveToDb, deleteFromDb } = require('../db/db-helpers');
+
+// delete all records from db
+router.delete('/websites', async(req, res) => {
+
+    await deleteFromDb();
+
+    res.send();
+});
 
 router.get('/websites/:search', async(req, res) => {
 
@@ -21,7 +29,7 @@ router.get('/websites/:search', async(req, res) => {
         // first get results for provided search query then for each result repeat the same
         rp(options).then(async($) => {
             // parse useful data from static website, cheerio and some regex magic is used here
-            const objects = parse($, searchQuery);
+            const objects = parse($, req.params.search);
             await saveToDb(objects);
 
             // normalize all urls, get rid of 'http://www'
@@ -33,7 +41,6 @@ router.get('/websites/:search', async(req, res) => {
                 rp(options).then(async($) => {
                     const objects = parse($, website);
                     await saveToDb(objects);
-                    numberOfPages += objects.length;
                 });
             }
 
