@@ -3,31 +3,20 @@
 ## Prerequisites
 
 - NodeJs (<https://nodejs.org/en/>)
+- Docker (<https://www.docker.com/>)
 
-## Clone this repo
-
-```
-git clone https://github.com/domengabrovsek/dashdash.git
-```
-
-## Install needed packages
-
-Go to folder where you cloned this repo and run:
-```
-npm install
-```
-
-## Usage
-
-To start the app run
+## Get started
 
 ```
-node index.js
+git clone https://github.com/domengabrovsek/similar-websites.git
+npm install 
+npm run setup-db // this will pull latest mongodb image and run container
+
+node index.js // start the app
 ```
 
-Open browser (or any http client) and go to: 
-```
-http://localhost:3000/websites/[yourWebsite]
-```
+## Endpoints
 
-Where [yourWebsite] is the name of site you're searching for. e.g. google
+- [GET] http://localhost:3000/websites[yourWebsite] // e.g. http//localhost:3000/websites/google.com
+- [GET] http://localhost:3000/websites/save-to-csv // this will fetch all records from database and save it to csv file on desktop
+- [DELETE] http://localhost:3000/websites // this will delete all records in database (for testing purposes)
