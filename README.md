@@ -8,11 +8,17 @@
 ## Get started
 
 ```
-git clone https://github.com/domengabrovsek/similar-websites.git
-npm install 
-npm run setup-db // this will pull latest mongodb image and run container
+// clone repo
+~ git clone https://github.com/domengabrovsek/similar-websites.git
 
-node index.js // start the app
+// install dependencies
+~ npm install 
+
+// setup database
+npm run setup-db 
+
+// run app
+node index.js
 ```
 
 ## Endpoints
