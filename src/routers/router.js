@@ -8,6 +8,11 @@ const { parse } = require('../parser');
 const { saveToDb, deleteFromDb, readFromDb } = require('../db/db-helpers');
 const { saveToCsv } = require('../fs/csv-helpers');
 
+// test endpoints
+router.get('/test', async(req, res) => {
+    res.send('Server is working!');
+});
+
 router.get('/websites/save-to-csv', async(req, res) => {
 
     try {
