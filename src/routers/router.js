@@ -40,7 +40,7 @@ router.delete('/websites', async(req, res) => {
 // get websites
 router.get('/websites/:search', async(req, res) => {
 
-    console.log(`Request received for: ${req.params.search}`);
+    console.log(`\nRequest received for: ${req.params.search}\n`);
 
     try {
         const options = {
@@ -68,7 +68,7 @@ router.get('/websites/:search', async(req, res) => {
             }
 
             res.send(`Success!`);
-            console.log(`Request for: ${req.params.search} was successful.`);
+            console.log(`\nRequest for: ${req.params.search} was successful.`);
         }).catch(error => {
             console.log('Something went wrong. Please try again.');
             console.log(error);
@@ -79,9 +79,6 @@ router.get('/websites/:search', async(req, res) => {
         console.log(error)
         res.status(400).send(error);
     }
-
-    // because it makes testing in terminal much easier and more readable
-    console.log('\n\n ----------------- NEW REQUEST ----------------- \n\n');
 });
 
 module.exports = router;

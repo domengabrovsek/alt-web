@@ -3,6 +3,11 @@
 const mongoose = require('mongoose');
 
 const resultSchema = new mongoose.Schema({
+    id: {
+        type: Number,
+        trim: true,
+        unique: true
+    },
     search: {
         type: String,
         trim: true
@@ -19,14 +24,11 @@ const resultSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
-    // TODO have to check why mongoose complains about this type when saving do database
-    // categories: [{
-    //     category: {
-    //         type: String,
-    //         required: true,
-    //         trim: true
-    //     }
-    // }],
+    categories: [{
+        type: String,
+        required: true,
+        trim: true
+    }],
     similarity: {
         type: String,
         trim: true
@@ -43,14 +45,11 @@ const resultSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
-    // TODO have to check why mongoose complains about this type when saving do database
-    // matchingTags: [{
-    //     tag: {
-    //         type: String,
-    //         required: true,
-    //         trim: true
-    //     }
-    // }],
+    matchingTags: [{
+        type: String,
+        required: true,
+        trim: true
+    }],
     rating: {
         type: String,
         trim: true

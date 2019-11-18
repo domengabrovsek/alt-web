@@ -20,19 +20,20 @@ const readFromDb = async({ key, value } = {}) => {
 };
 
 const saveToDb = async(objects) => {
-    for(let object of objects) {
-        const result = new Result(object);
 
-        try {
-            console.log(`Saving ${object.title}`);
-            await result.save();
-            saved.push(object.title);
-            console.log(`${object.title} saved to database.\n`);
-        } catch (error) {
-            console.log(error.errmsg);
-            console.log(`${object.title} NOT saved to database.\n`);
-        }
-    }
+    const dbObjects = objects.map(object => new Result(object));
+
+    // bulk insert
+    await Result.insertMany(dbObjects).then(response => {
+        const savedObjects = response.map(object => object.title);
+
+        console.log(`Objects saved to database: \n`);
+        console.log(savedObjects);
+
+        return response.map(x => x.title);
+    }).catch(error => {
+        console.log(error);
+    })
 };
 
 const deleteFromDb = async(key, value) => {
