@@ -1,9 +1,8 @@
-FROM ubuntu
+FROM alpine
 
-# fetch latest stuff
-RUN apt-get update -y &&\
-    apt-get install nodejs -y && apt-get install npm -y &&\
-    apt-get install git -y &&\
+# install dependencies
+RUN apk add --update npm &&\
+    apk add --update git &&\
     git clone https://github.com/domengabrovsek/similar-websites.git app &&\
     cd app && npm install
 
