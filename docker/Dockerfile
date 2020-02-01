@@ -1,10 +1,10 @@
 FROM alpine
 
 # install dependencies
-RUN apk add --update npm &&\
-    apk add --update git &&\
-    git clone https://github.com/domengabrovsek/similar-websites.git app &&\
-    cd app && npm install
+RUN apk add --update npm
+RUN apk add --update git
+RUN git clone https://github.com/domengabrovsek/alt-web.git app
+RUN cd app && npm install
 
 # run app
 CMD node ./app/index.js
