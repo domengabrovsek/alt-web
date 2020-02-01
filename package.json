@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "app": "docker-compose down && docker-compose pull && docker-compose up -d"
+    "app": "docker-compose down && docker-compose pull && docker-compose up -d --force-recreate"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/domengabrovsek/similar-websites.git"
+    "url": "git+https://github.com/domengabrovsek/alt-web.git"
   },
   "keywords": [],
   "author": "",
