@@ -1,0 +1,9 @@
+{
+  "database": {
+    "name": "alt-web-db",
+    "user": "xxx",
+    "password": "xxx",
+    "host": "localhost",
+    "dialect": "mysql"
+  }
+}

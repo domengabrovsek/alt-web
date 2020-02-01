@@ -1,57 +1,69 @@
 'use strict';
 
-const Result = require('../models/result');
+async function get(model, column, value) {
 
-const readFromDb = async({ key, value } = {}) => {
+    // construct where condition
+    let filter = { where: { }};
+    filter.where[column] = value;
+
     try {
-        let filter = {};
-
-        if(key, value) {
-            filter[key] = value;
-        }
-
-        const results = await Result.find(filter);
-
-        return results;
-
+        const result = await model.findAll(filter);
+        return result.map(website => website.dataValues);
     } catch (error) {
-        console.log('Error when reading from database!');
+        console.log(`Error when selecting ${model.tableName} where ${column} = ${value}: ${error}`);
+        return null;
     }
-};
+}
 
-const saveToDb = async(objects) => {
-
-    const dbObjects = objects.map(object => new Result(object));
-
-    // bulk insert
-    await Result.insertMany(dbObjects).then(response => {
-        const savedObjects = response.map(object => object.title);
-
-        console.log(`Objects saved to database: \n`);
-        console.log(savedObjects);
-
-        return response.map(x => x.title);
-    }).catch(error => {
-        console.log(error);
-    })
-};
-
-const deleteFromDb = async(key, value) => {
+async function insert(model, record) {
     try {
-        let filter = {};
-
-        if(key && value) {
-            filter[key] = value;
-        }
-        
-        await Result.deleteMany(filter);
+        const result = await model.create(record);
+        console.log(`Created a new '${model.tableName}': ${result}`);
+        return result.dataValues;
     } catch (error) {
-        console.log(error);
+        console.log(`Error when inserting ${model.tableName}: ${error}`);
+        return null;
     }
-};
+}
+
+async function update(model, whereColumn, whereValue, updateColumn, updateValue) {
+    try {
+
+        // construct where condition
+        let update = {};
+        update[updateColumn] = updateValue;
+
+        let filter = { where: {}};
+        filter.where[whereColumn] = whereValue;
+
+        const result = await model.update(update, filter);
+        console.log(`Updated ${model.tableName} where ${whereColumn} = ${whereValue}`);
+        return result;
+    } catch (error) {
+        console.log(`Error when updating ${model.tableName} where ${whereColumn} = ${whereValue}: ${error}`);
+        return null;
+    }
+}
+
+async function remove(model, column, value) {
+
+    // construct where condition
+    let filter = { where: { }};
+    filter.where[column] = value;
+
+    try {
+        const result = await model.destroy(filter);
+        console.log(`Removed ${model.tableName} where ${column} = ${value}`);
+        return result;
+    } catch (error) {
+        console.log(`Error when removing ${model.tableName} where ${column} = ${value}: ${error}`);
+        return null;
+    }
+}
 
 module.exports = {
-    saveToDb,
-    deleteFromDb,
-    readFromDb
+    get,
+    insert,
+    update,
+    remove
 };
