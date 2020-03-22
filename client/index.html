@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <!--Meta stuff-->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!--Title-->
+    <title>Alternative Websites</title>
+
+    <!--Bootstrap CSS-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+    <!--Custom CSS-->
+    <link rel="stylesheet" href="./src/css/main.css">
+
+    <!--Axios & Vue -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+  </head>
+
+  <body>
+    <div id="app">
+      <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand" href="#">Dashboard</a>
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="#" @click="home">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" @click="preview">Preview</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Main table-->
+      <div v-if="currentPage === 'preview' ">
+        <main role="main" class="container-fluid">
+          <table class="table table-striped table-dark">
+            <thead>
+              <tr>
+                <th scope="col" v-for="column in columns">{{ column }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, index) in data">
+                <td v-for="column in columns"> {{ row[column] }} </td>
+              </tr>
+            </tbody>
+          </table>
+      </div>
+      </main>
+    </div>
+    <!--Bootstrap & Vue-->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="../client/src/app.js">
+    </script>
+  </body>
+
+</html>

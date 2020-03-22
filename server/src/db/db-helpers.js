@@ -4,7 +4,10 @@ async function get(model, column, value) {
 
     // construct where condition
     let filter = { where: { }};
-    filter.where[column] = value;
+
+    if(column & value) {
+        filter.where[column] = value;
+    }
 
     try {
         const result = await model.findAll(filter);
@@ -49,9 +52,12 @@ async function remove(model, column, value) {
 
     // construct where condition
     let filter = { where: { }};
-    filter.where[column] = value;
-
+    if(column && value) {
+        filter.where[column] = value;
+    }
+    
     try {
+        console.log(`Attempting to remove: ${model.tableName} where ${column} = ${value}`);
         const result = await model.destroy(filter);
         console.log(`Removed ${model.tableName} where ${column} = ${value}`);
         return result;

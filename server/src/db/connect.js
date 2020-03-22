@@ -3,7 +3,9 @@
 const Sequelize = require('sequelize');
 
 // read config for database
-const { database } = require('../../configuration.json');
+const {
+  database
+} = require('../../configuration.json');
 
 // set additional options
 const options = {
@@ -16,11 +18,14 @@ const options = {
 }
 
 // create the connection
-const sequelize = new Sequelize(database.name, database.user, database.password, options);
+let sequelize = new Sequelize(database.name, database.user, database.password, options);
 
 // check if connection is working
 sequelize
   .authenticate()
-  .catch(error => sequelize = undefined);
+  .catch(error => {
+    sequelize = undefined;
+    console.log(error);
+  });
 
 module.exports = sequelize;
