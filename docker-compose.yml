@@ -3,15 +3,15 @@ version: '3'
 services:
 
   alt-web-db:
-    image: mysql
+    image: mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: alt-web-db
     ports:
       - "3306:3306"
     container_name: "alt-web-db"
-  alt-web-app:
-    image: domengabrovsek/alt-web-app
-    ports: 
-      - "3000:3000"
-    container_name: "alt-web-app"
+  # alt-web-app:
+  #   image: domengabrovsek/alt-web-app
+  #   ports: 
+  #     - "3000:3000"
+  #   container_name: "alt-web-app"

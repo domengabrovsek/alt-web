@@ -10,10 +10,38 @@ const { saveToCsv } = require('../fs/csv-helpers');
 
 const website = require('../db/models/website');
 
-// test endpoint
+// status test endpoint
+router.get('/status', async(req, res) => {
+    console.log(`\n[GET] - '/website/status'.`);
+    res.send('Server is working!');
+});
+
+// data test endpoint
 router.get('/test', async(req, res) => {
     console.log(`\n[GET] - '/website/test'.`);
-    res.send('Server is working!');
+
+    let testData = {
+        data: []
+    };
+
+    for(let i = 0; i < 50; i++) {
+        testData.data.push(
+            { 
+                id: i, 
+                name: `Name ${i}`, 
+                description: `Description something ${i}`,
+                column1: `Column data - ${i}`,
+                column2: `Column data - ${i}`,
+                column3: `Column data - ${i}`,
+                column4: `Column data - ${i}`,
+                column5: `Column data - ${i}`,
+                column6: `Column data - ${i}`,
+                column7: `Column data - ${i}`,
+            });
+    }
+
+    res.set("Access-Control-Allow-Origin", '*');
+    res.send(testData);
 });
 
 // delete
