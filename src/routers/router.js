@@ -5,13 +5,99 @@ const router = new express.Router();
 const rp = require('request-promise');
 const cheerio = require('cheerio');
 const { parse } = require('../parser');
-const { saveToDb, deleteFromDb, readFromDb } = require('../db/db-helpers');
+const { get, update, insert, remove } = require('../db/db-helpers');
 const { saveToCsv } = require('../fs/csv-helpers');
 
-// test endpoints
+const website = require('../db/models/website');
+
+// test endpoint
 router.get('/test', async(req, res) => {
+    console.log(`\n[GET] - '/website/test'.`);
     res.send('Server is working!');
 });
+
+// delete
+router.delete('/website/delete', async(req, res) => {
+    
+    console.log(`\n[DELETE] - '/website/delete'.`);
+
+    const result = await remove(website);
+
+    res.send(`Removed: ${result}`);
+})
+
+// get
+router.get('/website/get', async(req, res) => {
+
+    console.log(`\n[GET] - '/website/get'.`);
+
+    const result = await get(website);
+
+    res.send(`Results: ${JSON.stringify(result)}`);
+})
+
+// create
+router.post('/website/create', async(req, res) => {
+
+    console.log(`\n[POST] - '/website/create'.`);
+
+    let record = { name: 'test', rating: 15 }
+
+    const result = await insert(website, record);
+
+    res.send(`Created website with id: ${result.website_id}`);
+})
+
+router.get('/website/scrape', async(req, res) => {
+
+    console.log(`\n[GET] - '/website/scrape'.`);
+
+    const query = 'google-chrome';
+
+    const options = {
+        uri: `https://www.alternativeto.net/software/${query}`,
+        transform: function (body) { return cheerio.load(body); }
+    }
+
+    function clean(object) {
+
+        let newObject = {};
+
+        Object.keys(object).forEach(key => {
+            newObject[key] = object[key].replace(/\r?\n|\r/g, '');
+        })
+
+        return newObject;
+    }
+
+    rp(options).then(async($) => {
+
+        let appHeader = $('#appHeader');
+
+        let title = appHeader.find('h1').text();
+        let description = appHeader.find('.lead').text();
+        let noOfLikes = appHeader.find('.like-box > .num').text();
+        let overview = appHeader.find('.limit > item-desc > p').text();
+
+        let result = {
+            title,
+            description,
+            noOfLikes,
+            overview
+        }
+
+
+        res.send(clean(result));
+    })
+
+    
+})
+
+// save to csv
+router.get('/website/save-to-csv', async(req, res) => {
+
+})
+
 
 router.get('/websites/save-to-csv', async(req, res) => {
 
