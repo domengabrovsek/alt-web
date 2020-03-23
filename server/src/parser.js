@@ -1,85 +1,36 @@
 'use strict';
 
-const parse = ($, searchQuery) => {
+const parse = ($) => {
 
-    const objects = [];
-    const properties = [
-        'title', 
-        'description', 
-        'website',
-        'categories',
-        'similarity',
-        'popularity',
-        'language',
-        'location',
-        'matchingTags',
-        'rating',
-        'votes'
-    ];
+  let appHeader = $('#appHeader');
 
-    // TODO try to find a better way to parse this
-    // https://stackoverflow.com/questions/1732348/regex-match-open-tags-except-xhtml-self-contained-tags?page=1&tab=votes#tab-top
-    $('.res_item').each((i, element) => {
-        let object = {
-            search: searchQuery
-        };
-        properties.forEach(property => {
-            object[property] = tryParseElement($, element, property);
-        })
-        // console.log('\n object: ', object);
-        objects.push(object);
-    });
+  let title = appHeader.find('h1').text().replace(/\r?\n|\r/g, '');
+  let description = appHeader.find('.lead').text().replace(/\r?\n|\r/g, '');
+  let noOfLikes = appHeader.find('.like-box > .num').text();
+  let overview = $('.item-desc > p')[0].children.map(element => element.data).join(" ").replace(/\s\s+/g, ' ');
+  let features = Array.from($('p >.label-feature').map((index, element) => element.firstChild.data));
+  let categories = Array.from($('p > .label-default').filter((index, element) => element.name === 'a').map((index, element) => element.firstChild.data));
+  let alternatives = Array.from($('.app-list-item h3 > a').map((index, element) => element.firstChild.data));
+  let platforms = Array.from($('.labels > li').map((index, element) => element.firstChild.data))
+  let tags = Array.from($('p > .label-default').filter((index, element) => element.name === 'span').map((index, element) => element.firstChild.data));
+  let website = $('.icon-official-website')[0].attribs.href;
 
-    return objects;
+  let result = {
+    title,
+    website,
+    description,
+    noOfLikes,
+    overview,
+    features,
+    categories,
+    alternatives,
+    platforms,
+    tags
+  }
+
+  return result;
 }
 
-const tryParseElement = ($, element, type) => {
-    let result;
-
-    try {
-        switch(type) {
-            case 'title':
-                result = $(element).find('.restitle').text();    
-                break;
-            case 'description':
-                result = $(element).find('.res_desc').text();
-                break;
-            case 'website':
-                result = $(element).find('.res_main_bottom').text();
-                break;
-            case 'categories':
-                result = $(element).find('.res_similarity').first().text().replace('Site Category: ', '').split('/').map(x => x.trim());
-                break;
-            case 'similarity':
-                result = $(element).find('.res_similarity').eq(1).html().match(/[0-9]{0,2}%/)[0];
-                break;
-            case 'popularity':
-                result = $(element).find('.res_similarity').eq(1).html().match(/is very high|is high|is medium|is low|is very low/)[0];
-                break;
-            case 'language': 
-                result = $(element).find('.res_similarity').eq(1).html().match(/<font color="\#[0-9]{6}\">(.*)<\/font>/g)[0].replace(/<font color=\"#424242\">/g, '').replace(/<\/font>/g, '').split('-').map(x => x.trim())[0];
-                break;
-            case 'location':
-                result = $(element).find('.res_similarity').eq(1).html().match(/<font color="\#[0-9]{6}\">(.*)<\/font>/g)[0].replace(/<font color=\"#424242\">/g, '').replace(/<\/font>/g, '').split('-').map(x => x.trim())[1];
-                break;
-            case 'matchingTags':
-                result = $(element).find('.res_similarity').eq(2).html().match(/(?<= Top [0-9]{1} matches are )(.*)(?=\.)/g)[0].split(',').map(x => x.trim());
-                break;
-            case 'rating':
-                result = $(element).find('.ri').text().replace(/[()]+/g, '').split(',').map(x => x.trim())[0];
-                break;
-            case 'votes':
-                result = $(element).find('.ri').text().replace(/[()]+/g, '').split(',').map(x => x.trim())[1].match(/[0-9]{1,10}/g)[0];
-                break;
-        }
-
-        return result;
-
-    } catch (error) {
-        return "";
-    }
-};
-
 module.exports = {
-    parse
+  parse
 };
