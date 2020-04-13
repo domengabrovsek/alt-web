@@ -8,6 +8,7 @@ const { parse } = require('../parser');
 const { get, update, insert, remove } = require('../db/db-helpers');
 const { saveToCsv } = require('../fs/csv-helpers');
 const website = require('../db/models/website');
+const path = require('path');
 
 // status test endpoint
 router.get('/status', async (req, res) => {
@@ -105,6 +106,12 @@ router.get('/scrape', async (req, res) => {
         original: parsedResult.title,
         alternative: alt
       };
+    })
+
+    saveToCsv({ 
+      columns: Object.keys(resultWithAlternatives[0]), 
+      data: resultWithAlternatives,
+      filePath: path.join(__dirname, '../../../data/csv-files/')
     })
 
     console.log({ data: resultWithAlternatives });

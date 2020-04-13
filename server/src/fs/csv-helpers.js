@@ -8,8 +8,10 @@ const saveToCsv = async ({ columns, data, filePath } = {}) => {
   try {
     // if no path is specified save it to desktop
     if (!filePath) {
-      filePath = `${path.join(homedir, 'Desktop')}\\similar-websites-${new Date().toString().slice(0, 24).replace(/\s|:/g, '-')}.csv`.toString();
+      filePath = `${path.join(homedir, 'Desktop')}`.toString();
     }
+
+    let fileName = `similar-websites-${new Date().toString().slice(0, 24).replace(/\s|:/g, '-')}.csv`;
 
     // set up headers for csv file
     const header = columns.map(column => ({
@@ -17,14 +19,15 @@ const saveToCsv = async ({ columns, data, filePath } = {}) => {
       title: column
     }));
     const csvWriter = createCsvWriter({
-      path: filePath,
+      path: `${filePath}${fileName}`,
       header
     });
 
     // write to file
     csvWriter
       .writeRecords(data)
-      .then(() => console.log('Data saved to: ', filePath));
+      .then(() => console.log('Data saved to: ', `${filePath}${fileName}`))
+      .catch((error) => console.log(error));
 
   } catch (error) {
     console.error(error);
