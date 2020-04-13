@@ -23,9 +23,12 @@ let sequelize = new Sequelize(database.name, database.user, database.password, o
 // check if connection is working
 sequelize
   .authenticate()
+  .then(() => {
+    console.log('Successfully connected to database.');
+  })
   .catch(error => {
     sequelize = undefined;
-    console.log(error);
+    console.log('Could not connect to database. Check if database container is running and your credentials are correct.');
   });
 
 module.exports = sequelize;
