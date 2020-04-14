@@ -3,28 +3,54 @@
 const homedir = require('os').homedir();
 const path = require('path');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const fs = require('fs');
 
-const saveToCsv = async ({ columns, data, filePath } = {}) => {
+const saveToCsv = async ({
+  columns,
+  data,
+  filePath,
+  fileName
+} = {}) => {
   try {
     // if no path is specified save it to desktop
     if (!filePath) {
-      filePath = `${path.join(homedir, 'Desktop')}\\similar-websites-${new Date().toString().slice(0, 24).replace(/\s|:/g, '-')}.csv`.toString();
+      filePath = `${path.join(homedir, 'Desktop')}`.toString();
     }
+
+    if (!fileName) {
+      fileName = `similar-websites-${new Date().toString().slice(0, 24).replace(/\s|:/g, '-')}`;
+    }
+
+    const fullFileName = `${filePath}/${fileName}.csv`;
 
     // set up headers for csv file
     const header = columns.map(column => ({
       id: column,
       title: column
     }));
+
     const csvWriter = createCsvWriter({
-      path: filePath,
+      path: fullFileName,
       header
     });
+
+    // check if folder doesn't exist yet
+    if(!fs.existsSync(filePath)) {
+      fs.mkdirSync(filePath);
+    }
 
     // write to file
     csvWriter
       .writeRecords(data)
-      .then(() => console.log('Data saved to: ', filePath));
+      .then(() => console.log('Data saved to: ', fullFileName))
+      .catch((error) => {
+
+        if (error.errno === -4058) {
+          return console.log(`Error: Path ${error.path} doesn't exist.`)
+        }
+
+        console.log(error)
+      });
 
   } catch (error) {
     console.error(error);
