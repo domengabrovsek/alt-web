@@ -111,7 +111,8 @@ router.get('/scrape', async (req, res) => {
     saveToCsv({ 
       columns: Object.keys(resultWithAlternatives[0]), 
       data: resultWithAlternatives,
-      filePath: path.join(__dirname, '../../../data/csv-files/')
+      filePath: path.join(__dirname, '../../../generated-csv-files'),
+      fileName: query
     })
 
     console.log({ data: resultWithAlternatives });
