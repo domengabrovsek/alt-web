@@ -1,8 +1,8 @@
 {
   "database": {
     "name": "alt-web-db",
-    "user": "xxx",
-    "password": "xxx",
+    "user": "root",
+    "password": "root",
     "host": "localhost",
     "dialect": "mysql"
   }
