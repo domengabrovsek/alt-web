@@ -4,6 +4,22 @@ const homedir = require('os').homedir();
 const path = require('path');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const fs = require('fs');
+const { Parser } = require('json2csv');
+
+const mapToCsv = (data) => {
+
+  // prepare csv headers
+  const opts = { fields: Object.keys(data[0]) };
+
+  // parse data to csv form and return it 
+  try {
+    const parser = new Parser(opts);
+    const csv = parser.parse(data);
+    return csv;
+  } catch (err) {
+    console.error(err);
+  }
+}
 
 const saveToCsv = async ({
   columns,
@@ -35,7 +51,7 @@ const saveToCsv = async ({
     });
 
     // check if folder doesn't exist yet
-    if(!fs.existsSync(filePath)) {
+    if (!fs.existsSync(filePath)) {
       fs.mkdirSync(filePath);
     }
 
@@ -58,5 +74,6 @@ const saveToCsv = async ({
 };
 
 module.exports = {
-  saveToCsv
+  saveToCsv,
+  mapToCsv
 }
