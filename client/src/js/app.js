@@ -3,7 +3,7 @@ new Vue({
   data() {
     return {
       data: {
-        rows: null,
+        rows: [],
         columns: null
       },
       searchQuery: null,
@@ -28,7 +28,7 @@ new Vue({
           const url = URL.createObjectURL(blob);
 
           // set properties which are then used in html button for download
-          this.download = `${this.searchQuery}.csv`;
+          this.download = `alt-web-${new Date().toString().slice(0, 24).replace(/\s|:/g, '-')}.csv`;
           this.href = url;
 
         } catch (error) {
@@ -41,12 +41,11 @@ new Vue({
       if (event.keyCode === 13) {
         axios
           .get(`http://localhost:3000/scrape?searchQuery=${this.searchQuery}`)
-          .then(response => {
+          .then(({ data }) => {
             // save data from response 
-            this.data = {
-              columns: Object.keys(response.data[0]),
-              rows: response.data,
-            };
+
+            this.data.columns = Object.keys(data);
+            this.data.rows.push(data);
 
             // prepare csv data and set button attributes for download
             this.prepareCsv(this.data.rows);
@@ -55,6 +54,9 @@ new Vue({
             console.error('Error while running search:', error);
           })
       }
+    },
+    clearData: function() {
+      this.data.rows = [];
     }
   }
 })
