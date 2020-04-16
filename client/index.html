@@ -46,14 +46,14 @@
     <div class="container-fluid">
       <!-- Search form -->
       <div class="row">
-        <div class="col-2">
+        <div class="col-1">
           <!--Search bar-->
           <input class="form-control" @keydown="search" v-model="searchQuery" type="text" placeholder="Search"
             aria-label="Search">
           <hr>
           <!-- Buttons -->
           <div class="btn-group-vertical my-2">
-            <button type="button" class="btn btn-dark my-1">Get data</button>
+            <button type="button" class="btn btn-dark my-1" @click="clearData" >Clear Data</button>
             <button type="button" class="btn btn-dark my-1"><a v-bind:href="href" v-bind:download="download">
               Save to CSV</a></button>
 
@@ -64,7 +64,7 @@
               data-target="#collapse">Preview</button>
           </div>
         </div>
-        <div class="col">
+        <div class="col-11">
           <main role="main" class="container-fluid">
             <div v-if="data.rows" class="table-wrapper-scroll-y my-custom-scrollbar">
               <table class="table table-striped table-dark">
@@ -74,8 +74,8 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(row, index) in data.rows">
-                    <td v-for="column in data.columns"> {{ row[column] }} </td>
+                  <tr v-for="(row, rowIndex) in data.rows">
+                    <td v-for="(column, colIndex) in data.columns"> {{ row[column] }} </td>
                   </tr>
                 </tbody>
               </table>
