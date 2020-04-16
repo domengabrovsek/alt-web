@@ -6,7 +6,7 @@ const rp = require('request-promise');
 const cheerio = require('cheerio');
 const { parse } = require('../parser');
 const { get, update, insert, remove } = require('../db/db-helpers');
-const { saveToCsv } = require('../fs/csv-helpers');
+const { mapToCsv } = require('../fs/csv-helpers');
 const website = require('../db/models/website');
 const path = require('path');
 
@@ -108,12 +108,7 @@ router.get('/scrape', async (req, res) => {
       };
     })
 
-    saveToCsv({ 
-      columns: Object.keys(resultWithAlternatives[0]), 
-      data: resultWithAlternatives,
-      filePath: path.join(__dirname, '../../../generated-csv-files'),
-      fileName: query
-    })
+    console.log(mapToCsv(resultWithAlternatives));
 
     console.log({ data: resultWithAlternatives });
 
@@ -123,7 +118,7 @@ router.get('/scrape', async (req, res) => {
   }).catch(error => {
     console.log(`Site ${query} doesn't exist!`)
     res.set("Access-Control-Allow-Origin", '*');
-    res.send({ status: "error", message: `Site ${query} doesn't exist!`});
+    res.send({ status: "error", message: `Site ${query} doesn't exist!` });
   })
 })
 
@@ -131,14 +126,13 @@ router.get('/scrape', async (req, res) => {
 router.get('/save-to-csv', async (req, res) => {
 
   try {
-    // get all records from db
-    const data = await readFromDb();
-    const columns = Object.keys(JSON.parse(JSON.stringify(data))[0]);
 
-    await saveToCsv({
-      columns,
-      data
-    });
+    // saveToCsv({ 
+    //   columns: Object.keys(resultWithAlternatives[0]), 
+    //   data: resultWithAlternatives,
+    //   filePath: path.join(__dirname, '../../../generated-csv-files'),
+    //   fileName: query
+    // })
 
     res.set("Access-Control-Allow-Origin", '*');
     res.send({
