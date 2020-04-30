@@ -14,7 +14,6 @@
               aria-label="Search"
             />
           </li>
-          <button type="button" class="btn btn-dark h-50" @click="clearData">Clear Data</button>
           <button type="button" class="btn btn-dark h-50">
             <a v-bind:href="href" v-bind:download="download">Save to CSV</a>
           </button>
@@ -26,19 +25,22 @@
     <!-- Home page -->
     <main role="main" class="container-fluid">
       <div class="row">
-        <div v-if="data.rows" class="table-wrapper-scroll-y">
-          <table class="table table-striped table-dark">
-            <thead>
-              <tr>
-                <th scope="col" v-for="column in data.columns" :key="column">{{ column }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="row in data.rows" :key="row">
-                <td v-for="column in data.columns" :key="column">{{ row[column] }}</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="col-12">
+          <div v-if="data" class="table-responsive max-table">
+            <table class="table table-striped table-dark">
+              <thead>
+                <tr>
+                  <th v-for="column in columns" :key="column">{{ column }}</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr v-for="row in data" :key="row">
+                  <td v-for="column in columns" :key="column">{{ row[column] }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </main>
@@ -52,10 +54,8 @@ import json2csv from "json2csv";
 export default {
   data() {
     return {
-      data: {
-        rows: [],
-        columns: null
-      },
+      columns: [],
+      data: [],
       searchQuery: null,
       download: null,
       href: null
@@ -90,30 +90,46 @@ export default {
       // when enter is pressed in search bar, call api to
       if (event.keyCode === 13) {
         axios
-          .get(`http://localhost:3000/scrape?searchQuery=${this.searchQuery}`)
+          .get(
+            `http://localhost:3000/alternative?searchQuery=${this.searchQuery}`
+          )
           .then(({ data }) => {
             // save data from response
-
-            this.data.columns = Object.keys(data);
-            this.data.rows.push(data);
+            if (!this.data.find(alt => alt.title === data.title)) {
+              this.columns = Object.keys(data);
+              this.data.push(data);
+            }
 
             // prepare csv data and set button attributes for download
-            this.prepareCsv(this.data.rows);
+            this.prepareCsv(this.data);
           })
           .catch(error => {
-            console.error("Error while running search:", error);
+            console.log(error);
+            window.alert(`Page for ${this.searchQuery} doesn't exist!`);
           });
       }
-    },
-    clearData() {
-      this.data.rows = [];
     }
+  },
+  mounted() {
+    axios
+      .get(`http://localhost:3000/alternatives`)
+      .then(({ data }) => {
+        // save data from response
+
+        this.columns = Object.keys(data[0]);
+        this.data = data;
+
+        // prepare csv data and set button attributes for download
+        this.prepareCsv(this.data);
+      })
+      .catch(error => {
+        console.error("Error while running search:", error);
+      });
   }
 };
 </script>
 
 <style>
-/* Show it is fixed to the top */
 body {
   padding-top: 3.54rem;
 }
@@ -127,5 +143,12 @@ button > a:hover {
   color: white !important;
   text-decoration: none !important;
   cursor: pointer !important;
+}
+.max-table {
+  max-height: 54rem;
+}
+td {
+  max-width: 17rem;
+  overflow-wrap: break-word;
 }
 </style>

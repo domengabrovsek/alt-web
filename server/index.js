@@ -1,13 +1,17 @@
 'use strict';
 
-// to make it more readable in terminal for test purposes
-console.clear();
-
 const express = require('express');
-const router = require('./src/routers/router');
+
+// connect to db
+const db = require('./src/db/connect');
+
+const config = require('./configuration');
+
+// routers
+const commonRouter = require('./src/routers/common');
+const alternativesRouter = require('./src/routers/alternative');
 
 const app = express();
-const port = 3000;
 
 // custom middleware to log requests to console for every endpoint
 app.use((req, res, next) => {
@@ -29,8 +33,12 @@ app.use((error, req, res, next) => {
   res.status(500).send();
 });
 
+// set json as default
 app.use(express.json());
-app.use(router);
+
+// register routers
+app.use(commonRouter);
+app.use(alternativesRouter);
 
 // start server
-app.listen(port, () => console.log(`Server started on port ${port}`));
+app.listen(config.port, () => console.log(`Server started on port ${config.port}`));

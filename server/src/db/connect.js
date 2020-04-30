@@ -20,6 +20,24 @@ const options = {
 // create the connection
 let sequelize = new Sequelize(database.name, database.user, database.password, options);
 
+// create initial table
+(async () => {
+  await sequelize.query(`create table if not exists WEBSITE (
+    WEBSITE_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    TITLE VARCHAR(100) NOT NULL UNIQUE,
+    DESCRIPTION TEXT NULL,
+    ALTERNATIVES TEXT NULL,
+    NO_OF_LIKES SMALLINT NULL,
+    OVERVIEW TEXT NULL,
+    PLATFORMS TEXT NULL,
+    WEBSITE VARCHAR(100) NULL,
+    FEATURES TEXT NULL,
+    CATEGORIES TEXT NULL,
+    TAGS TEXT NULL,
+    RATING TINYINT NULL
+);`);
+})();
+
 // check if connection is working
 sequelize
   .authenticate()
