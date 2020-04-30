@@ -42,9 +42,6 @@
         </div>
       </div>
     </main>
-
-    <!-- Footer -->
-    <footer class="footer"></footer>
   </div>
 </template>
 
@@ -118,7 +115,6 @@ export default {
 <style>
 /* Show it is fixed to the top */
 body {
-  min-height: 70rem;
   padding-top: 3.54rem;
 }
 button {

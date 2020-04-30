@@ -1,19 +1,21 @@
 'use strict';
 
 const express = require('express');
+const cors = require('cors');
 const router = new express.Router();
 const rp = require('request-promise');
 const cheerio = require('cheerio');
+
 const { parse } = require('../parser');
 
 // status test endpoint
-router.get('/status', async (req, res) => {
+router.get('/status', cors(), async (req, res) => {
   console.log(`\n[GET] - '/status'.`);
   res.send('Server is working!');
 });
 
 // scrape endpoint
-router.get('/scrape', async (req, res) => {
+router.get('/scrape', cors(), async (req, res) => {
 
   console.log(`\nReceived request.`);
   console.log(`URI: ${req.originalUrl}`)
