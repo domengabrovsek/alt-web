@@ -6,6 +6,8 @@ FROM node:12.16.3
 # clone source code
 RUN git clone https://github.com/domengabrovsek/alt-web.git app
 
+RUN cd app && git checkout docker-spin-up
+
 # install dependencies
 RUN npm install --prefix "app/server"
 

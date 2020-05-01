@@ -8,6 +8,8 @@ const {
   database
 } = require('../../configuration.json');
 
+console.log(`Running in docker: ${Boolean(isDocker())}`);
+
 // set additional options
 const options = {
   host: isDocker() ? database.docker_host : database.host,
