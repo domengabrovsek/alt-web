@@ -9,5 +9,8 @@ RUN git clone https://github.com/domengabrovsek/alt-web.git app
 # install dependencies
 RUN npm install --prefix "app/server"
 
+# copy scripts
+COPY wait-for-it.sh /app/wait-for-it.sh
+
 # run app
 CMD node ./app/server/index.js
