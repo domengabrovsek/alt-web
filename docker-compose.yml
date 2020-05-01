@@ -32,6 +32,7 @@ services:
       - db
     # wait 30s for db container to start and start listening on specified port then start server
     command: bash -c "./app/wait-for-it.sh alt-web-db:3306 -t 30 && node ./app/server/index"
+    
     container_name: alt-web-server
     restart: unless-stopped
 
