@@ -11,17 +11,7 @@ services:
     ports:
       - "3306:3306"
     container_name: alt-web-db
-
-  # server:
-  #   networks:
-  #     alt-web-network:
-  #   image: domengabrovsek/alt-web:server
-  #   ports: 
-  #     - "3000:3000"
-  #   depends_on:
-  #     - db
-  #   command: ["./wait-for-it.sh", "alt-web-db:3306"]
-  #   container_name: alt-web-server
+    restart: unless-stopped
 
   client:
     networks:
@@ -30,17 +20,20 @@ services:
     ports:
       - "8080:8080"
     container_name: alt-web-client
+    restart: unless-stopped
 
-  test-server:
+  server:
     networks:
       alt-web-network:
-    image: test-server
+    image: domengabrovsek/alt-web:server
     ports: 
       - "3000:3000"
     depends_on:
       - db
-    command: ["./app/wait-for-it.sh", "alt-web-db:3306", "--", "node", "./app/server/index"]
-    container_name: alt-web-test-server
+    # wait 30s for db container to start and start listening on specified port then start server
+    command: bash -c "./app/wait-for-it.sh alt-web-db:3306 -t 30 && node ./app/server/index"
+    container_name: alt-web-server
+    restart: unless-stopped
 
 networks:
   alt-web-network:
