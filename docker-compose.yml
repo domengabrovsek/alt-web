@@ -2,17 +2,46 @@ version: '3'
 
 services:
   db:
+    networks:
+      alt-web-network:
     image: mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: alt-web-db
     ports:
       - "3306:3306"
-  server:
-    image: domengabrovsek/alt-web:server
-    ports: 
-      - "3000:3000"
+    container_name: alt-web-db
+
+  # server:
+  #   networks:
+  #     alt-web-network:
+  #   image: domengabrovsek/alt-web:server
+  #   ports: 
+  #     - "3000:3000"
+  #   depends_on:
+  #     - db
+  #   command: ["./wait-for-it.sh", "alt-web-db:3306"]
+  #   container_name: alt-web-server
+
   client:
+    networks:
+      alt-web-network:
     image: domengabrovsek/alt-web:client
     ports:
       - "8080:8080"
+    container_name: alt-web-client
+
+  test-server:
+    networks:
+      alt-web-network:
+    image: test-server
+    ports: 
+      - "3000:3000"
+    depends_on:
+      - db
+    command: ["./app/wait-for-it.sh", "alt-web-db:3306", "--", "node", "./app/server/index"]
+    container_name: alt-web-test-server
+
+networks:
+  alt-web-network:
+    driver: bridge

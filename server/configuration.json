@@ -5,6 +5,7 @@
     "user": "root",
     "password": "root",
     "host": "localhost",
+    "docker_host": "alt-web-db",
     "dialect": "mysql"
   }
 }

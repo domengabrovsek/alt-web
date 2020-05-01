@@ -1,5 +1,6 @@
 'use strict';
 
+const isDocker = require('is-docker');
 const Sequelize = require('sequelize');
 
 // read config for database
@@ -9,7 +10,7 @@ const {
 
 // set additional options
 const options = {
-  host: database.host,
+  host: isDocker() ? database.docker_host : database.host,
   dialect: database.dialect,
   define: {
     freezeTableName: true, // disable auto pluralizing table names
@@ -20,9 +21,14 @@ const options = {
 // create the connection
 let sequelize = new Sequelize(database.name, database.user, database.password, options);
 
-// create initial table
-(async () => {
-  await sequelize.query(`create table if not exists WEBSITE (
+// check if connection is working
+sequelize
+  .authenticate()
+  .then(async () => {
+    console.log('Successfully connected to database.');
+    // create initial table
+
+    await sequelize.query(`create table if not exists WEBSITE (
     WEBSITE_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     TITLE VARCHAR(100) NOT NULL UNIQUE,
     DESCRIPTION TEXT NULL,
@@ -36,13 +42,6 @@ let sequelize = new Sequelize(database.name, database.user, database.password, o
     TAGS TEXT NULL,
     RATING TINYINT NULL
 );`);
-})();
-
-// check if connection is working
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log('Successfully connected to database.');
   })
   .catch(error => {
     sequelize = undefined;
