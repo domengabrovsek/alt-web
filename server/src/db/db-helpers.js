@@ -27,6 +27,7 @@ async function insertToDb(model, record) {
 
     const mappedRecord = {
       title: record.title,
+      query: record.query,
       website: record.website,
       description: record.description,
       no_of_likes: record.noOfLikes,
@@ -66,7 +67,7 @@ async function update(model, whereColumn, whereValue, updateColumn, updateValue)
   }
 }
 
-async function remove(model, column, value) {
+async function removeFromDb(model, column, value) {
 
   // construct where condition
   let filter = { where: {} };
@@ -90,5 +91,5 @@ module.exports = {
   selectAllFromDb,
   insertToDb,
   update,
-  remove
+  removeFromDb
 };

@@ -17,7 +17,8 @@
           <button type="button" class="btn btn-dark h-50">
             <a v-bind:href="href" v-bind:download="download">Save to CSV</a>
           </button>
-          <button type="button" class="btn btn-dark h-50">Build graphs</button>
+          <button type="button" class="btn btn-dark h-50" @click="refresh">Refresh</button>
+          <button type="button" class="btn btn-dark h-50" @click="retryFailed">Retry</button>
         </ul>
       </div>
     </nav>
@@ -35,7 +36,7 @@
               </thead>
 
               <tbody>
-                <tr v-for="row in data" :key="row">
+                <tr v-for="row in data" :key="row.title">
                   <td v-for="column in columns" :key="column">{{ row[column] }}</td>
                 </tr>
               </tbody>
@@ -96,8 +97,8 @@ export default {
           .then(({ data }) => {
             // save data from response
             if (!this.data.find(alt => alt.title === data.title)) {
-              this.columns = Object.keys(data);
-              this.data.push(data);
+              this.columns = Object.keys(data[0]);
+              this.data.push(...data);
             }
 
             // prepare csv data and set button attributes for download
@@ -108,23 +109,54 @@ export default {
             window.alert(`Page for ${this.searchQuery} doesn't exist!`);
           });
       }
+    },
+    refresh() {
+      axios
+        .get(`http://localhost:3000/alternatives`)
+        .then(({ data }) => {
+          // save data from response
+          if (data && data.length > 0) {
+            data = data.map(x => {
+              delete x.website_id;
+              return x;
+            });
+
+            this.columns = Object.keys(data[0]);
+            this.data = data;
+
+            // prepare csv data and set button attributes for download
+            this.prepareCsv(this.data);
+          }
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    retryFailed() {
+      axios
+        .get(`http://localhost:3000/alternatives/retry`)
+        .then(({ data }) => {
+          // save data from response
+          if (data && data.length > 0) {
+            data = data.map(x => {
+              delete x.website_id;
+              return x;
+            });
+
+            this.columns = Object.keys(data[0]);
+            this.data = data;
+
+            // prepare csv data and set button attributes for download
+            this.prepareCsv(this.data);
+          }
+        })
+        .catch(error => {
+          console.error(error);
+        });
     }
   },
   mounted() {
-    axios
-      .get(`http://localhost:3000/alternatives`)
-      .then(({ data }) => {
-        // save data from response
-
-        this.columns = Object.keys(data[0]);
-        this.data = data;
-
-        // prepare csv data and set button attributes for download
-        this.prepareCsv(this.data);
-      })
-      .catch(error => {
-        console.error("Error while running search:", error);
-      });
+    this.refresh();
   }
 };
 </script>

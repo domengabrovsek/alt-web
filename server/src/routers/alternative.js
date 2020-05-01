@@ -1,16 +1,18 @@
 'use strict';
 
-const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const router = new express.Router();
 
-const { readFromFile, saveToFile, exists } = require('../fs/fileHelpers');
-const { get, getAll } = require('../utils');
+const { get, getAll, remove } = require('../utils');
+const { log } = require('../common/common-utils');
+
+const Website = require('../db/models/website');
+const Title = require('../db/models/title');
 
 // return all records from database
 router.get('/alternatives', cors(), async (req, res) => {
-  let results = await getAll();
+  let results = await getAll(Website);
 
   res.send(results);
 });
@@ -28,8 +30,31 @@ router.get('/alternative', cors(), async (req, res) => {
     // get initial record
     const record = await get(query);
 
+    const alternatives = record.alternatives.split(',');
+
+    let records = [record];
+
+    log(`Alternatives to process: `, 'cyan');
+    log(`${alternatives.map(alt => ` - ${alt}`).join('\n')}`, 'yellow');
+    log('\n Starting processing: ');
+
+    let failed = [];
+    let succeeded = [];
+
+    for (const alt of alternatives) {
+
+      try {
+        records.push(await get(alt));
+        succeeded.push(alt);
+        log(` Processed: ${alt} - DONE`, 'green');
+      } catch (error) {
+        failed.push(alt);
+        log(` Processed: ${alt} - FAILED`, 'red');
+      }
+    }
+
     console.log(`Processed request.`);
-    res.send(record);
+    res.send(records);
   } catch (error) {
     if (error.statusCode === 404) {
 
@@ -44,31 +69,24 @@ router.get('/alternative', cors(), async (req, res) => {
   }
 });
 
-function addTitle(title) {
+router.get('/alternatives/retry', cors(), async (req, res) => {
 
-  // title dictionary
-  const filePath = path.join(__dirname, '../db/titles.json');
+  const records = await getAll(Title);
 
-  if (!exists(filePath)) {
-    saveToFile({ path: filePath, data: {} });
+  for (const record of records) {
+
+    try {
+      await get(record.title);
+      // await remove(Title, 'title', record.title);
+      // console.log(`Removed '${record.title}' from database`);
+
+    } catch (error) {
+      console.log('Error while retrying: ', record.title);
+    }
+
   }
 
-  // read the dictionary
-  let dictionary = readFromFile(filePath);
-
-  // if it already exists just return it
-  if (Object.keys(dictionary).some(key => key === title)) {
-    console.log(`Title ${title} already exists in the dictionary!`);
-    return dictionary;
-  }
-
-  // add the title and save
-  dictionary[title] = title;
-  saveToFile({ path: filePath, data: dictionary, overwrite: true });
-
-  console.log(`Title ${title} added!`);
-
-  return dictionary;
-}
+  res.send(records);
+});
 
 module.exports = router;

@@ -6,6 +6,7 @@ const sequelize = require('../connect');
 const Website = sequelize.define('WEBSITE', {
   website_id: { type: Sequelize.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
   title: { type: Sequelize.STRING, allowNull: false },
+  query: { type: Sequelize.STRING, allowNull: false },
   description: { type: Sequelize.TEXT, allowNull: true },
   alternatives: { type: Sequelize.STRING, allowNull: true },
   no_of_likes: { type: Sequelize.INTEGER, allowNull: true },

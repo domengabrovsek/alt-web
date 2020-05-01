@@ -17,7 +17,9 @@ const options = {
   define: {
     freezeTableName: true, // disable auto pluralizing table names
     timestamps: false // disable creating created_at and updated_at columns
-  }
+  },
+  // disable logging; default: console.log
+  logging: false
 }
 
 // create the connection
@@ -30,9 +32,11 @@ sequelize
     console.log('Successfully connected to database.');
     // create initial table
 
+    console.log('Creating initial table for websites.');
     await sequelize.query(`create table if not exists WEBSITE (
     WEBSITE_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     TITLE VARCHAR(100) NOT NULL UNIQUE,
+    QUERY VARCHAR(100) NOT NULL UNIQUE,
     DESCRIPTION TEXT NULL,
     ALTERNATIVES TEXT NULL,
     NO_OF_LIKES SMALLINT NULL,
@@ -44,6 +48,15 @@ sequelize
     TAGS TEXT NULL,
     RATING TINYINT NULL
 );`);
+    console.log('Done.');
+
+    console.log('Creating initial table for titles.');
+    await sequelize.query(`create table if not exists TITLE (
+      TITLE_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      TITLE VARCHAR(100) NOT NULL UNIQUE
+  );`);
+    console.log('Done.');
+
   })
   .catch(error => {
     sequelize = undefined;
