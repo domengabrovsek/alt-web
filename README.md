@@ -16,3 +16,5 @@
 ~ docker-compose up -d
 
 ```
+Trello board with TODO list:
+https://trello.com/b/Dg2w9OU0/tasks
