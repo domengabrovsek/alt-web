@@ -14,6 +14,7 @@ console.log(`Running in docker: ${Boolean(isDocker())}`);
 const options = {
   host: isDocker() ? database.docker_host : database.host,
   dialect: database.dialect,
+  logging: false,
   define: {
     freezeTableName: true, // disable auto pluralizing table names
     timestamps: false // disable creating created_at and updated_at columns

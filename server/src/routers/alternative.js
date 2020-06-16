@@ -28,6 +28,26 @@ router.get('/alternative', cors(), async (req, res) => {
     // get initial record
     const record = await get(query);
 
+    // if a record is found then loop through all of its alternatives and get their alternatives
+    if (record) {
+
+      const alternatives = record.alternatives
+        .replace(/\s/g, '-')
+        .split(',');
+
+      console.log(`\n Alternatives for ${query}: `);
+      alternatives.forEach(x => console.log(x));
+
+      for (let alternative of alternatives) {
+
+        try {
+          await get(alternative)
+        } catch (error) {
+          console.log(`Error while processing ${alternative}`);
+        }
+      }
+    }
+
     console.log(`Processed request.`);
     res.send(record);
   } catch (error) {
