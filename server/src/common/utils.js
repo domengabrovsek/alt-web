@@ -4,12 +4,12 @@ const rp = require('request-promise');
 const cheerio = require('cheerio');
 
 const { parse } = require('./parser');
-const { selectFromDb, insertToDb, selectAllFromDb } = require('./db/db-helpers');
-const Website = require('./db/models/website');
+const { selectFromDb, insertToDb, selectAllFromDb } = require('../db/utils/db-helpers');
+const Website = require('../db/website/model');
 
-async function getAll() {
+async function getAll(model) {
 
-  const results = await selectAllFromDb(Website);
+  const results = await selectAllFromDb(model);
 
   return results.map(res => {
     delete res.website_id;

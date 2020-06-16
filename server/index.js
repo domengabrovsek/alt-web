@@ -3,13 +3,14 @@
 const express = require('express');
 
 // connect to db
-const db = require('./src/db/connect');
+const db = require('./src/db/utils/connect');
 
 const config = require('./configuration');
 
 // routers
 const commonRouter = require('./src/routers/common');
 const alternativesRouter = require('./src/routers/alternative');
+const websitesRouter = require('./src/routers/website');
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use(express.json());
 // register routers
 app.use(commonRouter);
 app.use(alternativesRouter);
+app.use(websitesRouter);
 
 // start server
 app.listen(config.port, () => console.log(`Server started on port ${config.port}`));

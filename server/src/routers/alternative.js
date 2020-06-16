@@ -6,13 +6,22 @@ const cors = require('cors');
 const router = new express.Router();
 
 const { readFromFile, saveToFile, exists } = require('../fs/fileHelpers');
-const { get, getAll } = require('../utils');
+const { get, getAll } = require('../common/utils');
+const { log } = require('../common/common-utils');
+const { insertAlternativeToDb } = require('../db/utils/db-helpers');
+const Alternative = require('../db/alternative/model');
 
 // return all records from database
 router.get('/alternatives', cors(), async (req, res) => {
-  let results = await getAll();
+  try {
+    const records = await getAll(Alternative)
+    console.log(`Processed request.`);
+    res.send(records);
 
-  res.send(results);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send();
+  }
 });
 
 // scrape endpoint
@@ -35,18 +44,29 @@ router.get('/alternative', cors(), async (req, res) => {
         .replace(/\s/g, '-')
         .split(',');
 
-      console.log(`\n Alternatives for ${query}: `);
-      alternatives.forEach(x => console.log(x));
+      let records = [record];
+      let failed = [];
+      let succeeded = [];
 
-      for (let alternative of alternatives) {
+      log(`Alternatives to process: `, 'cyan');
+      log(`${alternatives.map(alt => ` - ${alt}`).join('\n')}`, 'yellow');
+      log('\n Starting processing: ');
 
+      for (const alt of alternatives) {
         try {
-          await get(alternative)
+          records.push(await get(alt));
+          succeeded.push(alt);
+          await insertAlternativeToDb(Alternative, { website_name: query, alternative_name: alt });
+          log(` Processed: ${alt} - DONE`, 'green');
         } catch (error) {
-          console.log(`Error while processing ${alternative}`);
+          failed.push(alt);
+          log(` Processed: ${alt} - FAILED`, 'red');
         }
       }
     }
+
+    console.log('Inserting alternatives:')
+
 
     console.log(`Processed request.`);
     res.send(record);
@@ -57,7 +77,7 @@ router.get('/alternative', cors(), async (req, res) => {
       const message = `Error: 404 page ${page} not found.`;
 
       console.log(message);
-      res.status(200).send({ status: 'error', message });
+      res.status(400).send({ status: 'error', message });
     } else {
       res.status(500).send();
     }

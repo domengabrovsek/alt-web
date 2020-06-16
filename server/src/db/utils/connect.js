@@ -6,7 +6,7 @@ const Sequelize = require('sequelize');
 // read config for database
 const {
   database
-} = require('../../configuration.json');
+} = require('../../../configuration.json');
 
 console.log(`Running in docker: ${Boolean(isDocker())}`);
 
@@ -29,9 +29,31 @@ sequelize
   .authenticate()
   .then(async () => {
     console.log('Successfully connected to database.');
-    // create initial table
 
-    await sequelize.query(`create table if not exists WEBSITE (
+    // create initial table
+    await createWebsiteTable();
+
+    // create alternatives table
+    await createAlternativesTable();
+
+  })
+  .catch(error => {
+    sequelize = undefined;
+    console.log('Could not connect to database. Check if database container is running and your credentials are correct.');
+  });
+
+const createAlternativesTable = async () => {
+  await sequelize.query(
+    `create table if not exists ALTERNATIVE(
+    WEBSITE_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    WEBSITE_NAME VARCHAR(100) NOT NULL,
+    ALTERNATIVE_NAME VARCHAR(100) NOT NULL UNIQUE
+  )
+  `);
+}
+
+const createWebsiteTable = async () => {
+  await sequelize.query(`create table if not exists WEBSITE (
     WEBSITE_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     TITLE VARCHAR(100) NOT NULL UNIQUE,
     DESCRIPTION TEXT NULL,
@@ -45,10 +67,6 @@ sequelize
     TAGS TEXT NULL,
     RATING TINYINT NULL
 );`);
-  })
-  .catch(error => {
-    sequelize = undefined;
-    console.log('Could not connect to database. Check if database container is running and your credentials are correct.');
-  });
+}
 
 module.exports = sequelize;

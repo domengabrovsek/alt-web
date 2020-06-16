@@ -15,7 +15,13 @@
             />
           </li>
           <button type="button" class="btn btn-dark h-50">
-            <a v-bind:href="href" v-bind:download="download">Save to CSV</a>
+            <a v-bind:href="websiteHref" v-bind:download="websiteDownload">Save to websites CSV</a>
+          </button>
+          <button type="button" class="btn btn-dark h-50">
+            <a
+              v-bind:href="alternativeHref"
+              v-bind:download="alternativeDownload"
+            >Save to alternatives CSV</a>
           </button>
           <button type="button" class="btn btn-dark h-50">Build graphs</button>
         </ul>
@@ -26,17 +32,17 @@
     <main role="main" class="container-fluid">
       <div class="row">
         <div class="col-12">
-          <div v-if="data" class="table-responsive max-table">
+          <div v-if="websiteData" class="table-responsive max-table">
             <table class="table table-striped table-dark">
               <thead>
                 <tr>
-                  <th v-for="column in columns" :key="column">{{ column }}</th>
+                  <th v-for="column in websiteColumns" :key="column">{{ column }}</th>
                 </tr>
               </thead>
 
               <tbody>
-                <tr v-for="row in data" :key="row">
-                  <td v-for="column in columns" :key="column">{{ row[column] }}</td>
+                <tr v-for="row in websiteData" :key="row">
+                  <td v-for="column in websiteColumns" :key="column">{{ row[column] }}</td>
                 </tr>
               </tbody>
             </table>
@@ -54,15 +60,23 @@ import json2csv from "json2csv";
 export default {
   data() {
     return {
-      columns: [],
-      data: [],
       searchQuery: null,
-      download: null,
-      href: null
+
+      // websites properties
+      websiteDownload: null,
+      websiteHref: null,
+      websiteColumns: [],
+      websiteData: [],
+
+      // alternative properties
+      alternativeDownload: null,
+      alternativeHref: null,
+      alternativeColumns: [],
+      alternativeData: []
     };
   },
   methods: {
-    prepareCsv(data) {
+    prepareAlternativesCsv(data) {
       if (data) {
         try {
           const Parser = json2csv.Parser;
@@ -76,11 +90,37 @@ export default {
           const url = URL.createObjectURL(blob);
 
           // set properties which are then used in html button for download
-          this.download = `alt-web-${new Date()
+          this.alternativeDownload = `alternatives-${new Date()
             .toString()
             .slice(0, 24)
             .replace(/\s|:/g, "-")}.csv`;
-          this.href = url;
+
+          this.alternativeHref = url;
+        } catch (error) {
+          console.error("Error while parsing csv:", error);
+        }
+      }
+    },
+    prepareWebsiteCsv(data) {
+      if (data) {
+        try {
+          const Parser = json2csv.Parser;
+          const parser = new Parser({ fields: Object.keys(data[0]) });
+
+          // parse data to csv form
+          const csv = parser.parse(data);
+
+          // create the file and url for download
+          const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+          const url = URL.createObjectURL(blob);
+
+          // set properties which are then used in html button for download
+          this.websiteDownload = `websites-${new Date()
+            .toString()
+            .slice(0, 24)
+            .replace(/\s|:/g, "-")}.csv`;
+
+          this.websiteHref = url;
         } catch (error) {
           console.error("Error while parsing csv:", error);
         }
@@ -95,13 +135,13 @@ export default {
           )
           .then(({ data }) => {
             // save data from response
-            if (!this.data.find(alt => alt.title === data.title)) {
-              this.columns = Object.keys(data);
-              this.data.push(data);
+            if (!this.websiteData.find(alt => alt.title === data.title)) {
+              this.websiteColumns = Object.keys(data);
+              this.websiteData.push(data);
             }
 
             // prepare csv data and set button attributes for download
-            this.prepareCsv(this.data);
+            this.prepareWebsiteCsv(this.websiteData);
           })
           .catch(error => {
             console.log(error);
@@ -112,16 +152,34 @@ export default {
   },
   mounted() {
     axios
+      .get(`http://localhost:3000/websites`)
+      .then(({ data }) => {
+        // save data from response
+
+        this.websiteColumns = Object.keys(data[0]);
+        this.websiteData = data;
+
+        // prepare csv data and set button attributes for download
+        this.prepareWebsiteCsv(this.websiteData);
+      })
+      .catch(error => {
+        console.error("Error while running search:", error);
+      });
+
+    axios
       .get(`http://localhost:3000/alternatives`)
       .then(({ data }) => {
         // save data from response
 
-        this.columns = Object.keys(data[0]);
-        this.data = data;
+        if (data && data.length > 0) {
+          this.alternativeColumns = Object.keys(data[0]);
+          this.alternativeData = data;
 
-        // prepare csv data and set button attributes for download
-        this.prepareCsv(this.data);
+          // prepare csv data and set button attributes for download
+          this.prepareAlternativesCsv(this.alternativeData);
+        }
       })
+
       .catch(error => {
         console.error("Error while running search:", error);
       });

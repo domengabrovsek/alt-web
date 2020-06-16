@@ -22,6 +22,19 @@ async function selectFromDb(model, column, value) {
   }
 }
 
+// TODO refactor this asap!!!
+async function insertAlternativeToDb(model, record) {
+  try {
+
+    const result = await model.create(record);
+    console.log(`Created a new '${model.tableName}': ${result}`);
+    return result.dataValues;
+  } catch (error) {
+    console.log(`Error when inserting ${model.tableName}: ${error}`);
+    return null;
+  }
+}
+
 async function insertToDb(model, record) {
   try {
 
@@ -89,6 +102,7 @@ module.exports = {
   selectFromDb,
   selectAllFromDb,
   insertToDb,
+  insertAlternativeToDb,
   update,
   remove
 };
