@@ -7,7 +7,7 @@
 
   # build the image
   Write-Host "Building image for $name..." -ForegroundColor Cyan;
-  Invoke-Expression "docker build -t alt-web-$name ../docker/$name --no-cache";
+  Invoke-Expression "docker build -t alt-web-$name ../docker/$name";
   Write-Host "Image for $name built." -ForegroundColor Cyan;
 
   # tag the image
