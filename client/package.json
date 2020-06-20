@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "copy": "bash cp dist/* ../server/public/ -rf",
+    "copy": "cp dist/* ../server/public/ -rf",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
