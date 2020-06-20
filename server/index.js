@@ -43,7 +43,7 @@ app.use(alternativesRouter);
 app.use(websitesRouter);
 
 // server static files
-app.use(express.static('public'));
+app.use(express.static('dist'));
 
 // start server
 app.listen(config.port, () => console.log(`Server started on port ${config.port}`));

@@ -2,7 +2,7 @@
 
 # build the image
 Write-Host "Building docker image..." -ForegroundColor Cyan;
-Invoke-Expression "docker build -t alt-web-app .";
+Invoke-Expression "docker build -t alt-web-app . --no-cache";
 Write-Host "Docker image built." -ForegroundColor Cyan;
 
 # tag the image
