@@ -13,15 +13,6 @@ services:
     container_name: alt-web-db
     restart: unless-stopped
 
-  client:
-    networks:
-      alt-web-network:
-    image: domengabrovsek/alt-web:client
-    ports:
-      - "8080:8080"
-    container_name: alt-web-client
-    restart: unless-stopped
-
   server:
     networks:
       alt-web-network:
