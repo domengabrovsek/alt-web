@@ -11,9 +11,9 @@ RUN git clone --branch refactor-docker-image --single-branch --depth 1 https://g
 # build client
 WORKDIR /app/client
 
-# RUN npm install
+RUN npm install
 
-# RUN npm run build
+RUN npm run build
 
 RUN npm run copy
 
