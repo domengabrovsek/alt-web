@@ -1,7 +1,7 @@
 'use strict';
 
 const Sequelize = require('sequelize');
-const sequelize = require('../connect');
+const sequelize = require('../utils/connect');
 
 const Website = sequelize.define('WEBSITE', {
   website_id: { type: Sequelize.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
