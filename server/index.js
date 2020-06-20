@@ -42,5 +42,8 @@ app.use(commonRouter);
 app.use(alternativesRouter);
 app.use(websitesRouter);
 
+// server static files
+app.use(express.static('public'));
+
 // start server
 app.listen(config.port, () => console.log(`Server started on port ${config.port}`));

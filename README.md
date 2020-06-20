@@ -1,4 +1,4 @@
-## Description
+# Description
 
 ## Prerequisites
 
@@ -9,7 +9,7 @@
 ```powershell
 
 # clone repo
-~ git clone https://github.com/domengabrovsek/similar-websites.git
+~ git clone https://github.com/domengabrovsek/alt-web.git
 
 # run app
 ~ docker-compose up pull
