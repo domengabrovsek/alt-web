@@ -3,9 +3,9 @@
 const rp = require('request-promise');
 const cheerio = require('cheerio');
 
-const { parse } = require('./parser');
-const { selectFromDb, insertToDb, selectAllFromDb } = require('../db/utils/db-helpers');
-const Website = require('../db/website/model');
+const { parse } = require('../utils/parser');
+const { selectFromDb, insertToDb, selectAllFromDb } = require('../utils/db-helpers');
+const Website = require('../models/website');
 
 async function getAll(model) {
 
@@ -15,12 +15,14 @@ async function getAll(model) {
     delete res.website_id;
     return res;
   });
-};
+}
 
 async function get(query) {
 
   // check if exists in db
   let record = await selectFromDb(Website, 'title', query);
+
+  console.log(record)
 
   // if exists in database return it otherwise fetch from api
   if (record && record.length > 0) {
@@ -42,7 +44,7 @@ async function scrape(query) {
     transform(body) {
       return cheerio.load(body);
     }
-  }
+  };
 
   const result = await rp(options);
   const parsedResult = parse(result);

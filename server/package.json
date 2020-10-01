@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "app": "docker-compose down && docker-compose pull && docker-compose up -d --force-recreate"
+    "app": "docker-compose down && docker-compose pull && docker-compose up -d --force-recreate",
+    "start": "env-cmd -f ./src/config/dev.env nodemon",
+    "debug": "env-cmd -f ./src/config/dev.env nodemon --inspect=9229 src/app.js",
+    "lint": "eslint ./ --ext .js,.json --ignore-path .eslintignore",
+    "lint-fix": "eslint ./ --ext .js,.json --ignore-path .eslintignore --fix"
   },
   "repository": {
     "type": "git",
@@ -18,15 +22,23 @@
   },
   "homepage": "https://github.com/domengabrovsek/alt-web#readme",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.3",
     "cors": "^2.8.5",
     "csv-writer": "^1.5.0",
+    "env-cmd": "^10.1.0",
     "express": "^4.17.1",
     "is-docker": "^2.0.0",
     "json2csv": "^5.0.0",
-    "mysql2": "^2.1.0",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.4",
-    "sequelize": "^5.21.3"
+    "mssql": "^6.2.3",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5",
+    "sequelize": "^6.3.4",
+    "tedious": "^9.2.1",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.5.0",
+    "eslint-plugin-json": "^2.1.1"
   }
 }
