@@ -5,21 +5,22 @@ const path = require('path');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const fs = require('fs');
 const { Parser } = require('json2csv');
+const Logger = require('../loaders/logger');
 
 const mapToCsv = (data) => {
 
   // prepare csv headers
   const opts = { fields: Object.keys(data[0]) };
 
-  // parse data to csv form and return it 
+  // parse data to csv form and return it
   try {
     const parser = new Parser(opts);
     const csv = parser.parse(data);
     return csv;
   } catch (err) {
-    console.error(err);
+    Logger.error(err);
   }
-}
+};
 
 const saveToCsv = async ({
   columns,
@@ -58,22 +59,22 @@ const saveToCsv = async ({
     // write to file
     csvWriter
       .writeRecords(data)
-      .then(() => console.log('Data saved to: ', fullFileName))
+      .then(() => Logger.info('Data saved to: ', fullFileName))
       .catch((error) => {
 
         if (error.errno === -4058) {
-          return console.log(`Error: Path ${error.path} doesn't exist.`)
+          return Logger.error(`Error: Path ${error.path} doesn't exist.`);
         }
 
-        console.log(error)
+        Logger.error(error);
       });
 
   } catch (error) {
-    console.error(error);
+    Logger.error(error);
   }
 };
 
 module.exports = {
   saveToCsv,
   mapToCsv
-}
+};
