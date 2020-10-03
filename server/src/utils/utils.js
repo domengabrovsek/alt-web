@@ -22,8 +22,6 @@ async function get(query) {
   // check if exists in db
   let record = await selectFromDb(Website, 'title', query);
 
-  console.log(record)
-
   // if exists in database return it otherwise fetch from api
   if (record && record.length > 0) {
     return record[0];
