@@ -1,35 +1,25 @@
-const winston = require('winston');
-const config = require('../config/index');
+'use strict';
 
-const transports = [];
+const { createLogger, format, transports, config } = require('winston');
+const { combine, timestamp, label, printf, colorize } = format;
 
-if (process.env.NODE_ENV !== 'development') {
-  transports.push(
-    new winston.transports.Console()
-  );
-} else {
-  transports.push(
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.cli(),
-        winston.format.splat(),
-      )
-    })
-  );
-}
+const myConfig = require('../config/index');
 
-const LoggerInstance = winston.createLogger({
-  level: config.logs.level,
-  levels: winston.config.npm.levels,
-  format: winston.format.combine(
-    winston.format.timestamp({
-      format: 'YYYY-MM-DD HH:mm:ss'
-    }),
-    winston.format.errors({ stack: true }),
-    winston.format.splat(),
-    winston.format.json()
+const myFormat = printf(({ level, message, label, timestamp }) => {
+  return `${timestamp} [${label}] ${level}: ${message}`;
+});
+
+const LoggerInstance = createLogger({
+  level: myConfig.logs.level,
+  levels: config.npm.levels,
+
+  format: combine(
+    label({ label: 'alt-web' }),
+    timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    colorize(),
+    myFormat,
   ),
-  transports
+  transports: [new transports.Console()]
 });
 
 module.exports = LoggerInstance;

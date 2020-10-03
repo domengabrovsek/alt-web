@@ -1,5 +1,9 @@
 'use strict';
 
+const parseAlternatives = ($) => {
+  return Array.from($('.app-list-item h3 > a').map((index, element) => element.firstChild.data)).toString().replace(/\s/g, '-').split(',');
+}
+
 const parse = ($) => {
 
   const appHeader = $('#appHeader');
@@ -32,5 +36,6 @@ const parse = ($) => {
 };
 
 module.exports = {
-  parse
+  parse,
+  parseAlternatives
 };

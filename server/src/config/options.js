@@ -2,15 +2,10 @@
 
 const Sequelize = require('sequelize');
 
-const mssqlOptions = {
+const mysqlOptions = {
   user: process.env.ALT_WEB_DB_USER,
   password: process.env.ALT_WEB_DB_PASSWORD,
-  server: process.env.ALT_WEB_HOST,
-  database: process.env.ALT_WEB_DB_DEFAULT_NAME,
-  options: {
-    validateBulkLoadParameters: true,
-    enableArithAbort: true
-  }
+  host: process.env.ALT_WEB_HOST
 };
 
 const sequelize = new Sequelize(
@@ -24,7 +19,7 @@ const sequelize = new Sequelize(
 });
 
 module.exports = {
-  mssqlOptions,
+  mysqlOptions,
   sequelize,
   Sequelize
 }
