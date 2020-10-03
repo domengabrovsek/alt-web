@@ -6,13 +6,12 @@ services:
     networks:
       alt-web-network:
     container_name: alt_web_db
-    image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
-    ports:
-      - "1433:1433"
+    image: mysql:latest
     environment:
-      ACCEPT_EULA: Y
-      SA_PASSWORD: Password123!
-      MSSQL_PID: EXPRESS
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: alt-web-db
+    ports:
+      - "3306:3306"
     restart: unless-stopped
 
   # app:

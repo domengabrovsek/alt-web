@@ -5,8 +5,7 @@ const router = new express.Router();
 
 const { getAll, getAlternatives } = require('../utils/utils');
 
-const AlternativeToProcess = require('../models/alternative-to-process');
-
+const md5 = require('md5');
 const Logger = require('../loaders/logger');
 const Alternative = require('../models/alternative-to-process');
 
@@ -45,14 +44,14 @@ router.get('/alternative/fetch', async (req, res) => {
       {
         website_name: query,
         alternative_name: alt,
-        web_alt_name: `${query}${alt}`
+        web_alt_id: md5(`${query}${alt}`)
       })
     );
 
-    Alternative.bulkCreate(altSeqObj, { updateOnDuplicate: ["web_alt_name"] });
+    Alternative.bulkCreate(altSeqObj, { updateOnDuplicate: ["web_alt_id"] });
 
     Logger.info(`Processed request.`);
-    res.send(record);
+    res.send();
   } catch (error) {
     if (error.statusCode === 404) {
 
