@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "app": "docker-compose down && docker-compose pull && docker-compose up -d --force-recreate",
-    "start": "env-cmd -f ./src/config/dev.env nodemon",
-    "debug": "env-cmd -f ./src/config/dev.env nodemon --inspect=9229 src/app.js",
+    "start": "nodemon",
+    "debug": "nodemon --inspect ./src/app.js",
     "lint": "eslint ./ --ext .js,.json --ignore-path .eslintignore",
     "lint-fix": "eslint ./ --ext .js,.json --ignore-path .eslintignore --fix"
   },
@@ -28,6 +28,7 @@
     "csv-writer": "^1.5.0",
     "env-cmd": "^10.1.0",
     "express": "^4.17.1",
+    "glob": "^7.1.6",
     "is-docker": "^2.0.0",
     "json2csv": "^5.0.0",
     "mssql": "^6.2.3",

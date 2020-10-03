@@ -38,10 +38,7 @@ router.get('/alternative', async (req, res) => {
     // if a record is found then loop through all of its alternatives and get their alternatives
     if (record) {
 
-      const alternatives = record.alternatives
-        .replace(/\s/g, '-')
-        .split(',');
-
+      const alternatives = record.alternatives.replace(/\s/g, '-').split(',');
       const records = [record];
       const failed = [];
       const succeeded = [];
