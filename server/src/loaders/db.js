@@ -1,16 +1,15 @@
 'use strict';
 
-const sql = require('mssql');
 const Logger = require('./logger');
 const glob = require('glob');
 const path = require('path');
+const sql = require('mysql2');
 
-const { mssqlOptions, sequelize } = require('../config/options');
+const { mysqlOptions, sequelize } = require('../config/options');
 
 module.exports = async () => {
 
-  // if database doesn't exists, create it, otherwise just connect to it
-  await createDefaultDbIfNotExists(mssqlOptions);
+  await createDefaultDbIfNotExists(mysqlOptions);
 
   // connect to db any sync models(tables)
   await sequelize
@@ -37,13 +36,6 @@ const syncModels = () => {
 }
 
 const createDefaultDbIfNotExists = async (options) => {
-  const query = `if(db_id(N'${process.env.ALT_WEB_DB_NAME}') IS NULL) create database ${process.env.ALT_WEB_DB_NAME};`;
-
-  await sql.connect(options)
-    .then(async (conn) => await conn.query(query))
-    .catch(error => {
-      Logger.error(`Error while trying to connect to master!`);
-      Logger.error(error);
-      throw (error);
-    });
+  const connection = sql.createConnection(options)
+  connection.query(`create database if not exists ${process.env.ALT_WEB_DB_NAME};`)
 };

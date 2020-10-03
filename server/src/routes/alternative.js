@@ -3,11 +3,12 @@
 const express = require('express');
 const router = new express.Router();
 
-const { get, getAll } = require('../utils/utils');
-const { insertAlternativeToDb } = require('../utils/db-helpers');
-const Alternative = require('../models/alternative');
+const { getAll, getAlternatives } = require('../utils/utils');
+
+const AlternativeToProcess = require('../models/alternative-to-process');
 
 const Logger = require('../loaders/logger');
+const Alternative = require('../models/alternative-to-process');
 
 // return all records from database
 router.get('/alternatives', async (req, res) => {
@@ -23,7 +24,7 @@ router.get('/alternatives', async (req, res) => {
 });
 
 // scrape endpoint
-router.get('/alternative', async (req, res) => {
+router.get('/alternative/fetch', async (req, res) => {
 
   try {
     const query = req.query.searchQuery;
@@ -32,35 +33,24 @@ router.get('/alternative', async (req, res) => {
       res.status(500).send({ status: 'error', message: 'Please enter a search query!' });
     }
 
-    // get initial record
-    const record = await get(query);
+    // get alternatives for selected query
+    Logger.info(`Finding alternatives for: '${query}'`);
+    const alternatives = await getAlternatives(query);
 
-    // if a record is found then loop through all of its alternatives and get their alternatives
-    if (record) {
+    Logger.info(`Alternatives found: `);
+    alternatives.forEach(alt => Logger.info(`  ${alt}`));
 
-      const alternatives = record.alternatives.replace(/\s/g, '-').split(',');
-      const records = [record];
-      const failed = [];
-      const succeeded = [];
+    // construct sequelize object to insert to database
+    const altSeqObj = alternatives.map(alt => (
+      {
+        website_name: query,
+        alternative_name: alt,
+        web_alt_name: `${query}${alt}`
+      })
+    );
 
-      Logger.info('Alternatives to process:');
-      Logger.info(`${alternatives.map(alt => ` - ${alt}`).join('\n')}`);
-      Logger.info('Starting processing: ');
+    Alternative.bulkCreate(altSeqObj, { updateOnDuplicate: ["web_alt_name"] });
 
-      for (const alt of alternatives) {
-        try {
-          records.push(await get(alt));
-          succeeded.push(alt);
-          await insertAlternativeToDb(Alternative, { website_name: query, alternative_name: alt });
-          Logger.info(` Processed: ${alt} - DONE`);
-        } catch (error) {
-          failed.push(alt);
-          Logger.error(` Processed: ${alt} - FAILED`);
-        }
-      }
-    }
-
-    Logger.info('Inserting alternatives:');
     Logger.info(`Processed request.`);
     res.send(record);
   } catch (error) {
