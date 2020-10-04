@@ -2,7 +2,6 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const alternativeRouter = require('../routes/alternative');
-const websiteRouter = require('../routes/website');
 
 module.exports = ({ app }) => {
   // health check endpoints
@@ -21,7 +20,6 @@ module.exports = ({ app }) => {
 
   // register routers
   app.use(alternativeRouter);
-  app.use(websiteRouter);
 
   // catch 404 and forward to error handler
   app.use((req, res, next) => {

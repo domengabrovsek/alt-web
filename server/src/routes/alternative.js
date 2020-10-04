@@ -2,68 +2,77 @@
 
 const express = require('express');
 const router = new express.Router();
-
-const { getAll, getAlternatives } = require('../utils/utils');
-
-const md5 = require('md5');
 const Logger = require('../loaders/logger');
-const Alternative = require('../models/alternative-to-process');
 
-// return all records from database
-router.get('/alternatives', async (req, res) => {
+const AlternativeService = require('../services/AlternativeService');
+const alternativeService = new AlternativeService();
+
+router.get('/alternative', async (req, res) => {
+
   try {
-    const records = await getAll(Alternative);
-    Logger.info(`Processed request.`);
-    res.send(records);
+    const start = process.hrtime();
+    Logger.info(`Received request.`);
 
+    const { query, url } = req.query;
+
+    if (!query && !url) {
+      res.status(500).send({ status: 'error', message: 'Please enter a query or url!' });
+    }
+
+    if (query && url) {
+      res.status(500).send({ status: 'error', message: 'Please enter a query or url, not both.' });
+    }
+
+    let alternatives;
+
+    if (query) {
+      alternatives = await alternativeService.GetAlternativesByQuery(query);
+    } else if (url) {
+      alternatives = await alternativeService.GetAlternativesByUrl(url);
+    }
+
+    const end = process.hrtime(start);
+    Logger.info(`Processed request. Took ${end[0]}s, ${end[1] / 1000000} ms`);
+    res.send(alternatives);
   } catch (error) {
     Logger.error(error);
     res.status(500).send();
   }
 });
 
-// scrape endpoint
-router.get('/alternative/fetch', async (req, res) => {
-
+router.get('/alternatives', async (req, res) => {
   try {
-    const query = req.query.searchQuery;
+    Logger.info(`Received request.`);
+    const start = process.hrtime();
 
-    if (!query) {
-      res.status(500).send({ status: 'error', message: 'Please enter a search query!' });
+    const { sync } = req.query;
+
+    // if sync flag is given, first sync all alternatives, then fetch them
+    if (sync) {
+      const alternativesInDB = await alternativeService.GetAllAlternatives();
+      const promises = alternativesInDB
+        .map(alt => alternativeService.GetAlternativesByUrl(alt.alt_url));
+
+      try {
+        await Promise.all(promises);
+      } catch (error) {
+
+        Logger.error(`Error processing ${error.options.uri}`);
+
+        Logger.error(error);
+        res.status(500).send();
+      }
     }
 
-    // get alternatives for selected query
-    Logger.info(`Finding alternatives for: '${query}'`);
-    const alternatives = await getAlternatives(query);
+    const alternatives = await alternativeService.GetAllAlternatives();
+    const end = process.hrtime(start);
 
-    Logger.info(`Alternatives found: `);
-    alternatives.forEach(alt => Logger.info(`  ${alt}`));
-
-    // construct sequelize object to insert to database
-    const altSeqObj = alternatives.map(alt => (
-      {
-        website_name: query,
-        alternative_name: alt,
-        web_alt_id: md5(`${query}${alt}`)
-      })
-    );
-
-    Alternative.bulkCreate(altSeqObj, { updateOnDuplicate: ["web_alt_id"] });
-
-    Logger.info(`Processed request.`);
-    res.send();
+    Logger.info(`Processed request. Took ${end[0]}s, ${end[1] / 1000000} ms`);
+    res.send(alternatives);
   } catch (error) {
-    if (error.statusCode === 404) {
-
-      const page = error.options.uri.split('/')[error.options.uri.split('/').length - 1];
-      const message = `Error: 404 page ${page} not found.`;
-
-      Logger.info(message);
-      res.status(400).send({ status: 'error', message });
-    } else {
-      res.status(500).send();
-    }
+    Logger.error(error);
+    res.status(500).send();
   }
-});
+})
 
 module.exports = router;
