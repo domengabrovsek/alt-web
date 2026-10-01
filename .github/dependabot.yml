@@ -36,3 +36,19 @@ updates:
       security:
         applies-to: security-updates
         patterns: ["*"]
+
+  - package-ecosystem: docker-compose
+    directory: /
+    patterns: ["*"]
+    multi-ecosystem-group: dependencies
+    cooldown:
+      default-days: 7
+    groups:
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
+    ignore:
+      - dependency-name: "postgres"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "*/postgis"
+        update-types: ["version-update:semver-major"]
